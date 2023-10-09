@@ -13,7 +13,7 @@ timer = pygame.time.Clock()
 fps = 60
 font = pygame.font.Font('freesansbold.ttf', 20)
 level = copy.deepcopy(boards)
-color = 'blue'
+color = 'red'
 PI = math.pi
 player_images = []
 for i in range(1, 5):
@@ -83,13 +83,23 @@ class Ghost:
         self.rect = self.draw()
 
     def draw(self):
-        if (not powerup and not self.dead) or (eaten_ghost[self.id] and powerup and not self.dead):
-            screen.blit(self.img, (self.x_pos, self.y_pos))
-        elif powerup and not self.dead and not eaten_ghost[self.id]:
-            screen.blit(spooked_img, (self.x_pos, self.y_pos))
+        # Check if the ghost is not dead and either there is no power-up or it has been eaten by Pac-Man
+        if (not self.dead and (not powerup or eaten_ghost[self.id])):
+            image_to_draw = self.img
+        # Check if the ghost is not dead, there is a power-up, and it hasn't been eaten by Pac-Man
+        elif not self.dead and powerup and not eaten_ghost[self.id]:
+            image_to_draw = spooked_img
+        # If none of the above conditions are met, the ghost is dead
         else:
-            screen.blit(dead_img, (self.x_pos, self.y_pos))
+            image_to_draw = dead_img
+
+        # Draw the selected image at the ghost's position
+        screen.blit(image_to_draw, (self.x_pos, self.y_pos))
+        
+        # Create a rectangle representing the ghost's position for collision detection, centered around the ghost
         ghost_rect = pygame.rect.Rect((self.center_x - 18, self.center_y - 18), (36, 36))
+        
+        # Return the rectangle
         return ghost_rect
 
     def check_collisions(self):
@@ -1220,4 +1230,3 @@ while run:
 pygame.quit()
 
 
-# sound effects, restart and winning messages
