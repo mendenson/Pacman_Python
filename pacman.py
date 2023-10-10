@@ -103,58 +103,78 @@ class Ghost:
         return ghost_rect
 
     def check_collisions(self):
-        # Constants for readability and reusability
-        TILE_SIZE = 32
-        HALF_TILE_SIZE = TILE_SIZE // 2
-        HALF_GHOST_SIZE = 15
-        TILE_ROW_COUNT = (HEIGHT - 50) // TILE_SIZE
-        TILE_COL_COUNT = WIDTH // 30
-        MIN_X_BOX = 350
-        MAX_X_BOX = 550
-        MIN_Y_BOX = 370
-        MAX_Y_BOX = 480
-
-        # Initialize turns as all False
+        # R, L, U, D
+        num1 = ((HEIGHT - 50) // 32)
+        num2 = (WIDTH // 30)
+        num3 = 15
         self.turns = [False, False, False, False]
-
-        # Check if ghost is in the center of a tile
-        tile_x = self.center_x // TILE_COL_COUNT
-        tile_y = self.center_y // TILE_ROW_COUNT
-
-        # Check for collisions with walls or box
-        if 0 < tile_x < TILE_COL_COUNT - 1:
-            if level[tile_y][tile_x] == 9 and (self.in_box or self.dead):
+        if 0 < self.center_x // 30 < 29:
+            if level[(self.center_y - num3) // num1][self.center_x // num2] == 9:
                 self.turns[2] = True
-            if level[tile_y][tile_x - 1] < 3 or (level[tile_y][tile_x - 1] == 9 and (self.in_box or self.dead)):
+            if level[self.center_y // num1][(self.center_x - num3) // num2] < 3 \
+                    or (level[self.center_y // num1][(self.center_x - num3) // num2] == 9 and (
+                    self.in_box or self.dead)):
                 self.turns[1] = True
-            if level[tile_y][tile_x + 1] < 3 or (level[tile_y][tile_x + 1] == 9 and (self.in_box or self.dead)):
+            if level[self.center_y // num1][(self.center_x + num3) // num2] < 3 \
+                    or (level[self.center_y // num1][(self.center_x + num3) // num2] == 9 and (
+                    self.in_box or self.dead)):
                 self.turns[0] = True
-            if level[tile_y + 1][tile_x] < 3 or (level[tile_y + 1][tile_x] == 9 and (self.in_box or self.dead)):
+            if level[(self.center_y + num3) // num1][self.center_x // num2] < 3 \
+                    or (level[(self.center_y + num3) // num1][self.center_x // num2] == 9 and (
+                    self.in_box or self.dead)):
                 self.turns[3] = True
-            if level[tile_y - 1][tile_x] < 3 or (level[tile_y - 1][tile_x] == 9 and (self.in_box or self.dead)):
+            if level[(self.center_y - num3) // num1][self.center_x // num2] < 3 \
+                    or (level[(self.center_y - num3) // num1][self.center_x // num2] == 9 and (
+                    self.in_box or self.dead)):
                 self.turns[2] = True
 
-            # Check for collisions when ghost is close to tile borders
-            if self.direction in [2, 3] and HALF_TILE_SIZE - HALF_GHOST_SIZE <= self.center_x % TILE_COL_COUNT <= HALF_TILE_SIZE + HALF_GHOST_SIZE:
-                if level[tile_y + 1][tile_x] < 3 or (level[tile_y + 1][tile_x] == 9 and (self.in_box or self.dead)):
-                    self.turns[3] = True
-                if level[tile_y - 1][tile_x] < 3 or (level[tile_y - 1][tile_x] == 9 and (self.in_box or self.dead)):
-                    self.turns[2] = True
-            if self.direction in [0, 1] and HALF_TILE_SIZE - HALF_GHOST_SIZE <= self.center_y % TILE_ROW_COUNT <= HALF_TILE_SIZE + HALF_GHOST_SIZE:
-                if level[tile_y][tile_x - 1] < 3 or (level[tile_y][tile_x - 1] == 9 and (self.in_box or self.dead)):
-                    self.turns[1] = True
-                if level[tile_y][tile_x + 1] < 3 or (level[tile_y][tile_x + 1] == 9 and (self.in_box or self.dead)):
-                    self.turns[0] = True
+            if self.direction == 2 or self.direction == 3:
+                if 12 <= self.center_x % num2 <= 18:
+                    if level[(self.center_y + num3) // num1][self.center_x // num2] < 3 \
+                            or (level[(self.center_y + num3) // num1][self.center_x // num2] == 9 and (
+                            self.in_box or self.dead)):
+                        self.turns[3] = True
+                    if level[(self.center_y - num3) // num1][self.center_x // num2] < 3 \
+                            or (level[(self.center_y - num3) // num1][self.center_x // num2] == 9 and (
+                            self.in_box or self.dead)):
+                        self.turns[2] = True
+                if 12 <= self.center_y % num1 <= 18:
+                    if level[self.center_y // num1][(self.center_x - num2) // num2] < 3 \
+                            or (level[self.center_y // num1][(self.center_x - num2) // num2] == 9 and (
+                            self.in_box or self.dead)):
+                        self.turns[1] = True
+                    if level[self.center_y // num1][(self.center_x + num2) // num2] < 3 \
+                            or (level[self.center_y // num1][(self.center_x + num2) // num2] == 9 and (
+                            self.in_box or self.dead)):
+                        self.turns[0] = True
+
+            if self.direction == 0 or self.direction == 1:
+                if 12 <= self.center_x % num2 <= 18:
+                    if level[(self.center_y + num3) // num1][self.center_x // num2] < 3 \
+                            or (level[(self.center_y + num3) // num1][self.center_x // num2] == 9 and (
+                            self.in_box or self.dead)):
+                        self.turns[3] = True
+                    if level[(self.center_y - num3) // num1][self.center_x // num2] < 3 \
+                            or (level[(self.center_y - num3) // num1][self.center_x // num2] == 9 and (
+                            self.in_box or self.dead)):
+                        self.turns[2] = True
+                if 12 <= self.center_y % num1 <= 18:
+                    if level[self.center_y // num1][(self.center_x - num3) // num2] < 3 \
+                            or (level[self.center_y // num1][(self.center_x - num3) // num2] == 9 and (
+                            self.in_box or self.dead)):
+                        self.turns[1] = True
+                    if level[self.center_y // num1][(self.center_x + num3) // num2] < 3 \
+                            or (level[self.center_y // num1][(self.center_x + num3) // num2] == 9 and (
+                            self.in_box or self.dead)):
+                        self.turns[0] = True
         else:
-            # Allow turning when near the screen edges
             self.turns[0] = True
             self.turns[1] = True
-
-        # Check if the ghost is in the box
-        self.in_box = MIN_X_BOX < self.x_pos < MAX_X_BOX and MIN_Y_BOX < self.y_pos < MAX_Y_BOX
-
+        if 350 < self.x_pos < 550 and 370 < self.y_pos < 480:
+            self.in_box = True
+        else:
+            self.in_box = False
         return self.turns, self.in_box
-
 
     def move_clyde(self):
         # r, l, u, d
